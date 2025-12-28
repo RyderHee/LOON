@@ -1,5 +1,5 @@
 #!name=Telegram 多客户端跳转
-#!desc=点击 t.me 链接时自动唤起 App。支持在配置中选择：Telegram, Swiftgram, Turrit, iMe, Nicegram。
+#!desc=支持自动唤起第三方客户端 (Turrit, Swiftgram, iMe 等)。
 #!author=Roger
 #!icon=paperplane.fill
 #!date=2025-12-28
@@ -8,7 +8,7 @@
 跳转客户端 = select, "Telegram", "Swiftgram", "Turrit", "iMe", "Nicegram", "Liao"
 
 [Script]
-# 这里的 argument="{跳转客户端}" 
+# argument
 http-request ^https?:\/\/(www\.)?(t|telegram)\.(me|dog)\/ script-path=https://cdn.jsdelivr.net/gh/RyderHee/LOON@main/tg.js, timeout=10, tag=Telegram跳转, argument="{跳转客户端}"
 
 [MitM]
