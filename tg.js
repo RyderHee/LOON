@@ -1,4 +1,4 @@
-// 清洗参数：去掉可能存在的引号和空格
+// 1. 获取用户选择的 App (去除可能的引号和空格)
 let appName = "Telegram";
 if (typeof $argument !== "undefined" && $argument) {
     appName = $argument.replace(/"/g, "").trim();
@@ -6,7 +6,7 @@ if (typeof $argument !== "undefined" && $argument) {
 
 const url = $request.url;
 
-// 协议头映射 (注意大小写)
+// 2. 协议头映射表
 const schemes = {
     "Telegram": "tg://",
     "Swiftgram": "swiftgram://",
@@ -16,28 +16,21 @@ const schemes = {
     "Liao": "liao://"
 };
 
-// 如果没匹配到，默认回滚到 tg://
+// 3. 确定目标协议
 let targetScheme = schemes[appName] || "tg://";
 let newPath = "";
 
-// --- 路径解析逻辑 ---
-// 1. 进群
+// 4. 解析链接逻辑
 let joinMatch = url.match(/\/joinchat\/([a-zA-Z0-9_-]+)/);
 if (joinMatch) {
     newPath = `join?invite=${joinMatch[1]}`;
-} 
-// 2. 贴纸
-else if (url.match(/\/addstickers\//)) {
+} else if (url.match(/\/addstickers\//)) {
     let stickerMatch = url.match(/\/addstickers\/([a-zA-Z0-9_-]+)/);
     if (stickerMatch) newPath = `addstickers?set=${stickerMatch[1]}`;
-}
-// 3. 代理
-else if (url.match(/\/proxy\?/)) {
+} else if (url.match(/\/proxy\?/)) {
     let proxyMatch = url.split("/proxy?")[1];
     if (proxyMatch) newPath = `proxy?${proxyMatch}`;
-}
-// 4. 普通频道/个人
-else {
+} else {
     let path = url.split(/t\.me\//)[1];
     if (path && !path.startsWith("s/") && !path.startsWith("share/")) {
         let cleanPath = path.split("?")[0];
@@ -45,33 +38,27 @@ else {
     }
 }
 
-// --- 生成跳转页面 ---
+// 5. 执行跳转 (使用 HTML 方式，防拦截，成功率最高)
 if (newPath) {
     const finalUrl = `${targetScheme}${newPath}`;
-    
-    const htmlBody = `
+    const html = `
     <!DOCTYPE html>
-    <html lang="zh-CN">
+    <html>
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="refresh" content="0;url=${finalUrl}">
-        <title>正在唤起 ${appName}...</title>
-        <style>
-            body { background-color: #121212; color: #fff; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-            .btn { background: #2481cc; color: #fff; padding: 15px 30px; border-radius: 12px; text-decoration: none; font-weight: bold; margin-top: 20px; display: inline-block; }
-            p { color: #888; font-size: 14px; }
-        </style>
+        <title>跳转中...</title>
+        <style>body{background:#000;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;}</style>
     </head>
     <body>
-        <h2>正在前往 ${appName}</h2>
-        <p>如果未自动跳转，请点击下方按钮</p>
-        <a href="${finalUrl}" class="btn">点击打开 ${appName}</a>
+        <div style="text-align:center">
+            <p>正在跳转到 ${appName}...</p>
+            <br>
+            <a href="${finalUrl}" style="color:#007aff;font-size:18px;">如未跳转请点此</a>
+        </div>
         <script>
-            // JS 暴力跳转
             window.location.href = "${finalUrl}";
-            setTimeout(() => { window.location.href = "${finalUrl}"; }, 500);
-            setTimeout(() => { window.location.href = "${finalUrl}"; }, 1500);
+            setTimeout(function(){ window.location.href = "${finalUrl}"; }, 500);
         </script>
     </body>
     </html>`;
@@ -80,7 +67,7 @@ if (newPath) {
         response: {
             status: 200,
             headers: { "Content-Type": "text/html" },
-            body: htmlBody
+            body: html
         }
     });
 } else {
