@@ -1,7 +1,7 @@
 #!name=TG Redirect
 #!desc=Universal Telegram Redirect
 #!author=Roger
-#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Telegram.png
+#!icon=https://raw.githubusercontent.com/Orz-3/mini/master/Color/Telegram.png
 #!date=2025-12-30
 
 [Argument]
@@ -9,6 +9,14 @@ App = select, "Turrit", "Swiftgram", "iMe", "Nicegram", "Telegram"
 
 [Rule]
 DOMAIN-SUFFIX, t.me, PROXY
+DOMAIN-SUFFIX, tx.me, PROXY
+DOMAIN-SUFFIX, telegram.me, PROXY
+DOMAIN-SUFFIX, telegram.dog, PROXY
+DOMAIN-SUFFIX, turrit.me, PROXY
+DOMAIN-SUFFIX, swiftgram.app, PROXY
+DOMAIN-SUFFIX, imem.app, PROXY
+DOMAIN-SUFFIX, nicegram.app, PROXY
+DOMAIN-SUFFIX, nicegram.cloud, PROXY
 
 [MitM]
 hostname = t.me
