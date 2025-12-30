@@ -1,15 +1,15 @@
-#!name=Telegram 
-#!desc=支持 Turrit/Swiftgram 强制跳转。
+#!name=Telegram 多端跳转
+#!desc=支持 Turrit/Swiftgram 等第三方客户端。
 #!author=Roger
-#!icon=bolt.fill
+#!icon=paperplane.fill
 #!date=2025-12-30
 
 [Argument]
-跳转客户端 = select, "Turrit", "Swiftgram", "iMe", "Nicegram", "Telegram"
+跳转客户端 = select, "Turrit", "Swiftgram", "Telegram", "iMe", "Nicegram"
 
 [Script]
-# 指向刚才新建的 tg.js
-http-request ^https?:\/\/(www\.)?(t|telegram)\.(me|dog)\/ script-path=https://cdn.jsdelivr.net/gh/RyderHee/LOON@main/tg_final.js, timeout=10, tag=TG重定向, argument="{跳转客户端}"
+# 注意：v=fix_official 
+http-request ^https?:\/\/(www\.)?(t|telegram)\.(me|dog)\/ script-path=https://cdn.jsdelivr.net/gh/RyderHee/LOON@main/tg.js?v=fix_official, timeout=10, tag=TG跳转, argument="{跳转客户端}"
 
 [MitM]
 hostname = t.me, telegram.me, telegram.dog
