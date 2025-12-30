@@ -1,11 +1,8 @@
-let app = ($argument || "Turrit").replace(/["']/g, "").trim().toUpperCase();
-let scheme = "turrit";
+const target = ($argument || "Turrit").replace(/["']/g, "").trim().toUpperCase();
 const map = { "TURRIT": "turrit", "SWIFTGRAM": "swiftgram", "IME": "imem", "NICEGRAM": "nicegram", "TELEGRAM": "tg" };
-
-if (map[app]) scheme = map[app];
-
+const scheme = map[target] || "turrit";
 const url = $request.url;
-let action = "", value = "";
+let action, value;
 
 if (url.includes("/joinchat/")) {
     action = "join";
@@ -25,17 +22,7 @@ if (url.includes("/joinchat/")) {
 }
 
 if (action) {
-    $done({
-        response: {
-            status: 307,
-            headers: {
-                "Location": `${scheme}://${action}?${value}`,
-                "Cache-Control": "no-cache, no-store, must-revalidate",
-                "Pragma": "no-cache",
-                "Expires": "0"
-            }
-        }
-    });
+    $done({ response: { status: 307, headers: { Location: `${scheme}://${action}?${value}`, "Cache-Control": "no-cache" } } });
 } else {
     $done({});
 }
