@@ -1,24 +1,23 @@
-#!name=Telegram 多端跳转
-#!desc=支持 Turrit/Swiftgram 等第三方客户端 (内置防劫持规则)。
+#!name=Telegram
+#!desc=Roger 独家定制，支持 Turrit 等多客户端唤醒
 #!author=Roger
-#!icon=paperplane.fill
+#!icon=bolt.fill
 #!date=2025-12-30
 
 [Argument]
-跳转客户端 = select, "Turrit", "Swiftgram", "Telegram", "iMe", "Nicegram"
+# 这里的参数名我改成了简单的 "app"，和代码对应
+app = select, "Turrit", "Swiftgram", "Telegram", "iMe", "Nicegram"
 
 [Rule]
-# --- 核心防御规则 ---
-# 强制 t.me 走代理，确保脚本能拦截到
+# 必须的拦截规则
 DOMAIN-SUFFIX, t.me, PROXY
-DOMAIN-SUFFIX, telegram.me, PROXY
-DOMAIN-SUFFIX, telegram.dog, PROXY
 DOMAIN-SUFFIX, turrit.me, PROXY
-DOMAIN-SUFFIX, swiftgram.app, PROXY
 
 [MitM]
-hostname = t.me, telegram.me, telegram.dog
+# 核心解密域名
+hostname = t.me
 
 [Script]
-# 这里的链接还是指向原来的 tg.js，没改名！
-http-request ^https?:\/\/(www\.)?(t|telegram)\.(me|dog)\/ script-path=https://cdn.jsdelivr.net/gh/RyderHee/LOON@main/tg.js, timeout=10, tag=TG跳转, argument="{跳转客户端}"
+# 脚本重命名为 "TG_Redirect"，看起来更正规
+# 使用 http-request (比 response 更快，拦截更早)
+http-request ^https?:\/\/(www\.)?t\.me\/ script-path=https://cdn.jsdelivr.net/gh/RyderHee/LOON@main/tg.js, timeout=10, tag=TG_Redirect, argument="{app}"
