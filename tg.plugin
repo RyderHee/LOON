@@ -1,5 +1,5 @@
 #!name=Telegram 多端跳转
-#!desc=支持 Turrit/Swiftgram 等第三方客户端。
+#!desc=对标专业版：内置防劫持规则，支持 Turrit/Swiftgram 等。
 #!author=Roger
 #!icon=paperplane.fill
 #!date=2025-12-30
@@ -7,9 +7,20 @@
 [Argument]
 跳转客户端 = select, "Turrit", "Swiftgram", "Telegram", "iMe", "Nicegram"
 
-[Script]
-# 注意：v=fix_official 
-http-request ^https?:\/\/(www\.)?(t|telegram)\.(me|dog)\/ script-path=https://cdn.jsdelivr.net/gh/RyderHee/LOON@main/tg.js?v=fix_official, timeout=10, tag=TG跳转, argument="{跳转客户端}"
+[Rule]
+# 1. 强制 t.me 走代理，防止直连导致脚本不生效 (关键!)
+DOMAIN-SUFFIX, t.me, PROXY
+DOMAIN-SUFFIX, telegram.me, PROXY
+DOMAIN-SUFFIX, telegram.dog, PROXY
+
+# 2. 确保第三方客户端的后续流量也正常
+DOMAIN-SUFFIX, turrit.me, PROXY
+DOMAIN-SUFFIX, swiftgram.app, PROXY
 
 [MitM]
+# 2. 明确声明主机名，确保 Loon 解密 HTTPS
 hostname = t.me, telegram.me, telegram.dog
+
+[Script]
+# 3. 脚本部分：指向你的 GitHub，加了 v=pro 防止缓存
+http-request ^https?:\/\/(www\.)?(t|telegram)\.(me|dog)\/ script-path=https://cdn.jsdelivr.net/gh/RyderHee/LOON@main/tg.js?v=pro, timeout=10, tag=TG跳转, argument="{跳转客户端}"
